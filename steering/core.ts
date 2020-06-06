@@ -1,4 +1,4 @@
-import { VectorHelper } from "./common";
+import { VectorHelper, MathHelper } from "./common";
 
 export const defaultSteeringOutput: () => SteeringOutput = () => {
     return {
@@ -129,7 +129,7 @@ export abstract class BaseBehavior {
 
     applyToNode() {
         this.node.position = VectorHelper.toVec3(this.character.position);
-        this.node.angle = cc.misc.radiansToDegrees(this.character.orientation);
+        this.node.angle = cc.misc.radiansToDegrees(this.character.orientation - MathHelper.TAU / 4);
     }
 
     protected getSteering(): SteeringOutput {

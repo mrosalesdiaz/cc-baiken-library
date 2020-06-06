@@ -1,5 +1,6 @@
 
 export default class MathHelper {
+    static TAU: number = Math.PI * 2;
     public static deltaAngle(target: number, source: number) {
         return Math.atan2(Math.sin(target - source), Math.cos(target - source))
     }

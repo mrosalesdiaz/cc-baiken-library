@@ -1,4 +1,5 @@
 import { VectorHelper } from "../steering/common";
+import FunctionHelper from "./function-helper";
 
 export default class ColliderManagerEx {
     private colliderManager: cc.CollisionManager;
@@ -7,27 +8,87 @@ export default class ColliderManagerEx {
         this.colliderManager = cc.director.getCollisionManager();
     }
 
-    rayCast(start: cc.Vec2, end: cc.Vec2) {
-        console.time('ray-cast')
+    rayCast(start: cc.Vec2, end: cc.Vec2): [] {
         const collisions = this.colliderManager['_colliders']
             .map(c => {
                 if (c instanceof cc.BoxCollider) {
-                    return null;
+                    const instance: cc.BoxCollider = c;
+                    return this.testWithBox(instance, start, end);
                 } else if (c instanceof cc.CircleCollider) {
                     const instance: cc.CircleCollider = c;
-                    return this.intersectCircleLine(VectorHelper.toVec2(instance.node.position), instance.radius, start, end);
+                    return this.testIntersection(instance, start, end);
                 } else if (c instanceof cc.PolygonCollider) {
-                    return null;
+                    const instance: cc.PolygonCollider = c;
+                    return this.testIntersectionPoligon(instance, start, end);
                 } else {
                     throw `Type is not supported: ${c}`
                 }
             })
             .filter(c => c != null);
-        console.timeEnd('ray-cast');
 
         return collisions;
 
     }
+    testIntersectionPoligon(instance: cc.PolygonCollider, start: cc.Vec2, end: cc.Vec2) {
+        const intersect = instance.points
+            .map(p => p.add(VectorHelper.toVec2(instance.node.position).add(instance.offset)))
+            .reduce((prev, curr, index, all) => {
+                let nextIndex = index + 1;
+                if (nextIndex == all.length) {
+                    nextIndex = 0;
+                }
+                prev.push(FunctionHelper.intersectionLines(curr, all[nextIndex], start, end))
+                return prev;
+            }, []).filter(p => p != null);
+        return intersect
+    }
+    testWithBox(instance: cc.BoxCollider, start: cc.Vec2, end: cc.Vec2) {
+        const p = VectorHelper.toVec2(instance.node.position).add(instance.offset);
+        const { A, B, C, D } = FunctionHelper.boxColliderToVertex(p, new cc.Vec2(instance.size.width, instance.size.height));
+
+        return [
+            FunctionHelper.intersectionLines(A, B, start, end),
+            FunctionHelper.intersectionLines(B, C, start, end),
+            FunctionHelper.intersectionLines(C, D, start, end),
+            FunctionHelper.intersectionLines(D, A, start, end)
+        ].filter(p => p != null)
+    }
+
+    testIntersection(instance: cc.CircleCollider, start: cc.Vec2, end: cc.Vec2): cc.Vec2[] {
+        const translate: cc.Vec2 = VectorHelper.toVec2(instance.node.position).add(instance.offset);
+        const r: number = instance.radius;
+        const center = new cc.Vec2(0, 0);
+        start = start.sub(translate);
+        end = end.sub(translate);
+
+        const { A, B, C } = FunctionHelper.getLinearFunctionConstants(start, end);
+        const d = Math.abs(A * center.x + B * center.y + C) / Math.sqrt(A * A + B * B)
+        const intersectX = -(A * C) / (A * A + B * B);
+        const intersectY = -(B * C) / (A * A + B * B);
+
+        const intersect = (d <= r);
+        if (intersect) {
+            const dd = Math.sqrt(r * r - (C * C / (A * A + B * B)));
+            const mm = Math.sqrt(dd * dd / (A * A + B * B));
+
+            const a = new cc.Vec2(intersectX + B * mm, intersectY - A * mm);
+            const b = new cc.Vec2(intersectX - B * mm, intersectY + A * mm)
+            const returnValue = [];
+
+
+            if (FunctionHelper.pointIsInSegment(a, start, end)) {
+                returnValue.push(a.add(translate));
+            }
+            if (FunctionHelper.pointIsInSegment(b, start, end)) {
+                returnValue.push(b.add(translate));
+            }
+
+            return returnValue;
+        }
+
+        return [];
+    }
+
     intersectCircleLine2(center: cc.Vec2, r: number, start: cc.Vec2, end: cc.Vec2) {
         const P = start.sub(center);
         const Q = end.sub(center)
