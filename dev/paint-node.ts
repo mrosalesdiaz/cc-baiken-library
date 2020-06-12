@@ -1,4 +1,4 @@
-const { ccclass, property } = cc._decorator;
+const { ccclass, property, executeInEditMode } = cc._decorator;
 /**
  * Paint the node with the color configured in the graphic component
  * 
@@ -8,7 +8,8 @@ const { ccclass, property } = cc._decorator;
  * @author mrosalesdiaz
  * @history 2020-06-02 mrosalesdiaz - Initial version
  */
-@ccclass
+@ccclass()
+@executeInEditMode()
 export default class PaintNode extends cc.Component {
 
     onLoad() {

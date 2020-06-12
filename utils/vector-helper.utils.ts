@@ -35,7 +35,7 @@ export default class VectorHelper {
     }
 
     public static limit(vec: cc.Vec2, max: number): cc.Vec2 {
-        if (vec.magSqr() > max * max) {
+        if (vec.mag() > max) {
             return vec.normalize().multiplyScalar(max);
         }
         return vec;

@@ -68,3 +68,4 @@ creator.d.ts
 .vscode/
 
 # End of https://www.gitignore.io/api/cocoscreator
+*.ts.meta

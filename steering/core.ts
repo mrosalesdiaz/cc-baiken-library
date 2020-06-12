@@ -79,10 +79,10 @@ export class Kinematic implements Location, Limits {
         if (steering == null) {
             return;
         }
-        const scale = dt * 5;
+        const scale = dt;
         this.velocity = this.velocity.add(steering.linear.multiplyScalar(scale))
         this.velocity = VectorHelper.limit(this.velocity, this.maxVelocity);
-        this.position = this.position.add(this.velocity.multiplyScalar(scale));
+        this.position = this.position.add(this.velocity);
 
         this.rotation += steering.angular * dt;
         this.rotation = cc.misc.clampf(this.rotation, -this.maxRotation, this.maxRotation);
