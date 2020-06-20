@@ -1,4 +1,4 @@
-const { ccclass, property, executeInEditMode } = cc._decorator;
+const { ccclass, property, executeInEditMode, menu } = cc._decorator;
 /**
  * Paint the node with the color configured in the graphic component
  * 
@@ -9,10 +9,16 @@ const { ccclass, property, executeInEditMode } = cc._decorator;
  * @history 2020-06-02 mrosalesdiaz - Initial version
  */
 @ccclass()
+@menu('cc-baiken/Paint Node')
 @executeInEditMode()
 export default class PaintNode extends cc.Component {
 
+    @property(cc.Boolean)
+    paintOnlyInEditor: boolean = true;
+
     onLoad() {
+        if (!CC_EDITOR && this.paintOnlyInEditor) { return; }
+
         let g: cc.Graphics;
         if (!this.node.getComponent(cc.Graphics)) {
             g = this.node.addComponent(cc.Graphics);

@@ -1,13 +1,20 @@
 
-const { ccclass, property } = cc._decorator;
+const { ccclass, property, menu } = cc._decorator;
 
 /**
  * Class to define some shortcuts for interation in development.
+ * 
+ * @example
+ * Just add the node to the root node.
+ * Shortcuts:
+ *  command + r: restart game
+ *  command + p: recompile game
  * 
  * @author mrosalesdiaz
  * @history 2020-05-26 mrosalesdiaz - Initial version
  */
 @ccclass
+@menu('cc-baiken/Dev Shortcuts')
 export default class ShortcutsDev extends cc.Component {
     ctrlPressed = false;
     oneLateUpdate: (() => void)[] = [];
