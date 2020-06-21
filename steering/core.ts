@@ -71,7 +71,7 @@ export class Kinematic implements Location, Limits {
     static fromNode(node: cc.Node): Kinematic {
         const newKinematic = new Kinematic();
         newKinematic.position = VectorHelper.toVec2(node.position);
-        newKinematic.orientation = cc.misc.radiansToDegrees(node.angle);
+        newKinematic.orientation = cc.misc.degreesToRadians(node.angle + 90);
         return newKinematic;
     }
 

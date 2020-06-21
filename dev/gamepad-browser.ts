@@ -15,19 +15,52 @@ const { ccclass, property, menu } = cc._decorator;
 @menu('cc-baiken/Browser GamePad')
 export default class GamepadBrowserComponent extends cc.Component {
     axisLeft: cc.Vec2 = cc.Vec2.ZERO;
-    gamepad: Gamepad = null;
+
+    private pad0Connect: boolean = false;
+    private pad0index: number = 0;
+
+    private __handleGamepadConnected: (evt: GamepadEvent) => void;
+    private __handleGamepadDisconnected: (evt: GamepadEvent) => void;
+
+    public get gamepad(): Gamepad {
+        return navigator.getGamepads()[this.pad0index];
+    };
 
     onLoad() {
-        debugger;
-        window.addEventListener("gamepadconnected", (event: GamepadEvent) => {
-            this.gamepad = event.gamepad;
-            cc.log(`Gamepad connected ${this.gamepad.id}`);
-        });
+        this.__handleGamepadConnected = this.handleGamepadConnected.bind(this);
+        this.__handleGamepadDisconnected = this.handleGamepadConnected.bind(this);
+        if (navigator.getGamepads()[this.pad0index]) {
+            this.pad0Connect = navigator.getGamepads()[this.pad0index].connected
+        }
+        window.addEventListener("gamepadconnected", this.__handleGamepadConnected);
+        window.addEventListener("gamepaddisconnected", this.__handleGamepadDisconnected);
+    }
+
+    onDestroy() {
+        window.removeEventListener("gamepadconnected", this.__handleGamepadConnected);
+        window.removeEventListener("gamepaddisconnected", this.__handleGamepadDisconnected);
+    }
+
+    handleGamepadConnected(evt: GamepadEvent) {
+        this.pad0Connect = true;
+        cc.log(`Gamepad connected ${this.gamepad.id}`);
+    }
+
+    handleGamepadDisconnected(evt: GamepadEvent) {
+        if (evt.gamepad.index == this.pad0index) { this.pad0Connect = false; }
+        cc.log(`Gamepad disconnected ${this.gamepad.id}`);
     }
 
     update() {
-        if (this.gamepad) { return; }
+        if (!this.pad0Connect) { return; }
 
-        this.axisLeft = new cc.Vec2(this.gamepad.axes[0], this.gamepad.axes[1]);
+        let newDirection = new cc.Vec2(
+            parseFloat(this.gamepad.axes[0].toFixed(1))
+            , -parseFloat(this.gamepad.axes[1].toFixed(1)));
+
+        if (newDirection.mag() > 1) {
+            newDirection = newDirection.normalize();
+        }
+        this.axisLeft = newDirection;
     }
 }
