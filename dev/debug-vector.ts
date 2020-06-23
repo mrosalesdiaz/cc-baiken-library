@@ -8,7 +8,7 @@ export default class DebugVector extends cc.Component {
     nodeToListen: cc.Node = null;
 
     @property(cc.String)
-    eventToListen: string;
+    eventToListen: string = '';
 
     vector: cc.Vec2 = null;
 

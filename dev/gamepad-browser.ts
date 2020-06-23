@@ -43,6 +43,7 @@ export default class GamepadBrowserComponent extends cc.Component {
 
     handleGamepadConnected(evt: GamepadEvent) {
         this.pad0Connect = true;
+        this.pad0index = evt.gamepad.index;
         cc.log(`Gamepad connected ${this.gamepad.id}`);
     }
 
@@ -52,7 +53,7 @@ export default class GamepadBrowserComponent extends cc.Component {
     }
 
     update() {
-        if (!this.pad0Connect) { return; }
+        if (!this.pad0Connect || this.gamepad == null) { return; }
 
         let newDirection = new cc.Vec2(
             parseFloat(this.gamepad.axes[0].toFixed(1))

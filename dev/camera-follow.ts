@@ -6,7 +6,7 @@ const { ccclass, property } = cc._decorator;
 export default class CameraFollow extends cc.Component {
 
     @property(cc.Node)
-    playerNode: cc.Node;
+    playerNode: cc.Node = null;
 
     update(dt: number) {
         this.node.setPosition(this.playerNode.position);
