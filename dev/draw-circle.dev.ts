@@ -1,4 +1,4 @@
-const { ccclass, executeInEditMode, property } = cc._decorator;
+const { ccclass, executeInEditMode, property, menu } = cc._decorator;
 /**
  * This draw a circle over the node. If graphic component does not exists it will create.
  * 
@@ -9,6 +9,7 @@ const { ccclass, executeInEditMode, property } = cc._decorator;
  * @history 2020-05-26 mrosalesdiaz - Initial version
  */
 @ccclass
+@menu('cc-baiken/Paint Circle')
 @executeInEditMode()
 export default class DrawCircle extends cc.Component {
     @property(cc.Boolean)

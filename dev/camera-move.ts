@@ -33,7 +33,7 @@ export default class CameraMove extends cc.Component {
         if (evt.getButton() === cc.Event.EventMouse.BUTTON_RIGHT) {
             this.newPosition.current = cc.Vec3.ZERO;
         } else {
-            this.newPosition.current = this.newPosition.current.add(VectorHelper.toVec3(EventUtils.screenClick(evt, this.node)));
+            this.newPosition.current = this.newPosition.current.add(VectorHelper.toVec3(EventUtils.screenClick(evt.getLocation(), this.node)));
         }
     }
 
