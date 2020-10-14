@@ -16,6 +16,13 @@ const { ccclass, property, menu } = cc._decorator;
 export default class GamepadBrowserComponent extends cc.Component {
     axisLeft: cc.Vec2 = cc.Vec2.ZERO;
 
+    axisRight: cc.Vec2 = cc.Vec2.ZERO;
+
+    test: boolean = false;
+
+    @property(cc.String)
+    debugEventName: string = '';
+
     private pad0Connect: boolean = false;
     private pad0index: number = 0;
 
@@ -55,6 +62,20 @@ export default class GamepadBrowserComponent extends cc.Component {
     update() {
         if (!this.pad0Connect || this.gamepad == null) { return; }
 
+
+        this.axisLeft = this.getLeftStickAxis();
+        this.axisRight = this.getRightStickAxis();
+
+        this.test = this.getButton(1);
+
+        if (this.debugEventName !== '') {
+            this.node.emit(this.debugEventName, this.axisLeft);
+        }
+    }
+    getButton(index: number): boolean {
+        return this.gamepad.buttons[index].pressed;
+    }
+    getLeftStickAxis(): cc.Vec2 {
         let newDirection = new cc.Vec2(
             parseFloat(this.gamepad.axes[0].toFixed(1))
             , -parseFloat(this.gamepad.axes[1].toFixed(1)));
@@ -62,6 +83,18 @@ export default class GamepadBrowserComponent extends cc.Component {
         if (newDirection.mag() > 1) {
             newDirection = newDirection.normalize();
         }
-        this.axisLeft = newDirection;
+
+        return newDirection;
+    }
+    getRightStickAxis(): cc.Vec2 {
+        let newDirection = new cc.Vec2(
+            parseFloat(this.gamepad.axes[2].toFixed(1))
+            , -parseFloat(this.gamepad.axes[3].toFixed(1)));
+
+        if (newDirection.mag() > 1) {
+            newDirection = newDirection.normalize();
+        }
+
+        return newDirection;
     }
 }

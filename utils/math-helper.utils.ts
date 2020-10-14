@@ -1,5 +1,8 @@
 
 export default class MathHelper {
+    static calculateScaleFactor(value: number, newScale: number): number {
+        return newScale / value;
+    }
     static TAU: number = Math.PI * 2;
     static TAU_HALF: number = MathHelper.TAU / 2;
     static TAU_QUARTER: number = MathHelper.TAU / 4;

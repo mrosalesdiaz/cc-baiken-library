@@ -1,10 +1,10 @@
-import { MathHelper, VectorHelper } from "../steering/common";
+import { MathHelper } from "../steering/common";
 
 const { ccclass, property, requireComponent } = cc._decorator;
 
 @ccclass
 @requireComponent(cc.Graphics)
-export default class DebugVector extends cc.Component {
+export default class DebugButton extends cc.Component {
 
     @property(cc.String)
     componentTypeName: string = '';
@@ -14,9 +14,6 @@ export default class DebugVector extends cc.Component {
 
     @property(cc.Node)
     nodeRef: cc.Node = null;
-
-    @property(cc.Integer)
-    maxVectorLength: number = 0;
 
     private componentRef: cc.Component = null;
 
@@ -38,9 +35,8 @@ export default class DebugVector extends cc.Component {
             this.enabled = false;
             return;
         }
-
-
         this.g = this.node.getComponent(cc.Graphics);
+        this.g.lineWidth = (this.node.width / 2) * .05;
 
         const textNode1 = new cc.Node();
         textNode1.anchorY = 0;
@@ -63,19 +59,18 @@ export default class DebugVector extends cc.Component {
 
     update(dt: number) {
         if (this.resizeExecuted) {
-            this.maxVectorLength = this.maxVectorLength ?? this.node.width / 2;
             this.resizeExecuted = false;
             this.label1.node.scale = MathHelper.calculateScaleFactor(this.label1.node.width, this.node.width) * .9;
             this.label2.node.scale = MathHelper.calculateScaleFactor(this.label2.node.width, this.node.width) * .9;
         }
 
-        const actualVector = this.componentRef[this.componentAttributeName] as cc.Vec2;
-        const scaledVector = VectorHelper.map(actualVector, this.maxVectorLength, this.node.width / 2);
         this.g.clear();
-        this.g.moveTo(0, 0);
-        this.g.lineTo(scaledVector.x, scaledVector.y);
-        this.g.circle(scaledVector.x, scaledVector.y, 2);
+        this.g.circle(0, 0, this.node.width / 2);
         this.g.stroke();
+        if (this.componentRef[this.componentAttributeName] === true) {
+            this.g.circle(0, 0, (this.node.width / 2) * .9);
+            this.g.fill();
+        }
     }
 
 }

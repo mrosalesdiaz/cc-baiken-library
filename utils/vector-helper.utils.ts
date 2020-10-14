@@ -1,6 +1,12 @@
 import MathHelper from "./math-helper.utils";
 
 export default class VectorHelper {
+
+    static map(actualVector: cc.Vec2, currentMaxLenght: number, newMaxLenght: number): cc.Vec2 {
+        const newLenght = MathHelper.map(actualVector.len(), 0, currentMaxLenght, 0, newMaxLenght);
+        return VectorHelper.limit(actualVector, newLenght);
+    }
+
     static angle(target: cc.Vec2): number {
         return cc.Vec2.RIGHT.signAngle(target);
     }
@@ -34,8 +40,8 @@ export default class VectorHelper {
         return vec.normalize().mulSelf(mag);
     }
 
-    public static limit(vec: cc.Vec2, max: number): cc.Vec2 {
-        if (vec.mag() > max) {
+    public static limit(vec: cc.Vec2, max: number, errorFactor: number = 0): cc.Vec2 {
+        if (vec.mag() + errorFactor > max) {
             return vec.normalize().multiplyScalar(max);
         }
         return vec;

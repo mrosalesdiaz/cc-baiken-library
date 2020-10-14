@@ -1,11 +1,27 @@
+import { VectorHelper } from "./common";
 import { BaseBehavior, SteeringOutput, defaultSteeringOutput } from "./core";
 
 export default class ArriveBehavior extends BaseBehavior {
+
+  kinematic: cc.Node;
+
+  applyTransformSelf() {
+    if (this.kinematic === null) {
+      throw 'Kinematic not set';
+    }
+    this.applyTransform(this.kinematic);
+  }
+
+  applyTransform(node: cc.Node) {
+    node.position = VectorHelper.toVec3(this.character.position);
+    node.angle = cc.misc.radiansToDegrees(this.character.orientation - MathHelper.TAU / 4);
+  }
   targetPosition: cc.Vec2
 
   arrivingRadius: number;
 
   timeToTarget: number = 0.25;
+  target: cc.Vec2;
 
   getSteering(): SteeringOutput {
     const steeringOutput = defaultSteeringOutput();
